@@ -41,12 +41,10 @@ def equity_curves(series: dict[str, pd.Series], path):
     for name, r in series.items():
         eq = (1 + r).cumprod()
         lw = 1.5 if "SPY" in name or "equal" in name else 2
-        ax.plot(eq.index, eq, color=_c(name), lw=lw, label=name)
-        ax.annotate(f"{eq.iloc[-1]:.1f}×", (eq.index[-1], eq.iloc[-1]), xytext=(4, 0),
-                    textcoords="offset points", va="center", color=TEXT, fontsize=9)
+        ax.plot(eq.index, eq, color=_c(name), lw=lw, label=f"{name} (${eq.iloc[-1]:.2f})")
     ax.set_yscale("log")
-    fmt = matplotlib.ticker.FuncFormatter(lambda v, _: f"${v:g}")
-    ax.yaxis.set_major_formatter(fmt)
+    ax.yaxis.set_major_locator(matplotlib.ticker.LogLocator(base=10, subs=(1, 2, 5)))
+    ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"${v:g}"))
     ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
     ax.set_ylabel("Growth of $1 (log scale), net of costs")
     ax.set_title("Growth of $1: strategies vs. buy-and-hold")
